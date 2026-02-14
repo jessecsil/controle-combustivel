@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 # ---------------- Função para formatar valores como moeda ----------------
 def moeda_brasil(valor):
@@ -152,9 +153,7 @@ if os.path.exists(ARQUIVO):
         </div>
         """, unsafe_allow_html=True)
 
-       import matplotlib.pyplot as plt
-
-# ----------------------- Gráfico mensal -----------------------
+       # ----------------------- Gráfico mensal -----------------------
 with st.expander("📈 Mostrar gráfico de gastos mensais"):
     # Converte colunas para float
     df_view["GNV_NUM"] = df_view["GNV"].astype(float)
