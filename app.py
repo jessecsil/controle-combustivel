@@ -15,10 +15,10 @@ if not os.path.exists(ARQUIVO):
 # FORMULÁRIO DE ENTRADA
 with st.form("meu_form", clear_on_submit=True):
     data_input = st.date_input("Data", datetime.now())
-    
-    # Mostra a data selecionada no formato DD/MM/YYYY
+
+    # Truque visual: mostra a data no formato DD/MM/YYYY
     data_formatada_para_exibir = data_input.strftime("%d/%m/%Y")
-    st.markdown(f"**Data selecionada:** {data_formatada_para_exibir}")
+    st.text_input("Data (visualização brasileira)", data_formatada_para_exibir, disabled=True)
 
     v_gnv = st.number_input("GNV (R$)")
     v_gas = st.number_input("Gasolina (R$)")
@@ -45,7 +45,7 @@ if st.button("🗑️ Apagar todos os dados"):
     if os.path.exists(ARQUIVO):
         os.remove(ARQUIVO)
         st.success("Dados apagados com sucesso!")
-        st.experimental_rerun()  # Recarrega o app
+        st.experimental_rerun()
 
 # EXIBIÇÃO DOS DADOS
 if os.path.exists(ARQUIVO):
