@@ -46,8 +46,8 @@ if st.button("🗑️ Apagar todos os dados"):
 if os.path.exists(ARQUIVO):
     df_view = pd.read_csv(ARQUIVO, dtype=str)
 
-    # Converte DATA para datetime
-    df_view["DATA"] = pd.to_datetime(df_view["DATA"], dayfirst=True).dt.strftime("%d/%m/%Y")
+    # Converte DATA para datetime para filtros e gráficos
+    df_view["DATA"] = pd.to_datetime(df_view["DATA"], dayfirst=True)
 
     # Ordena do mais recente para o mais antigo
     df_view = df_view.sort_values(by="DATA", ascending=False)
@@ -62,14 +62,17 @@ if os.path.exists(ARQUIVO):
     df_filtrado = df_view[(df_view["DATA"] >= pd.to_datetime(start_date)) &
                           (df_view["DATA"] <= pd.to_datetime(end_date))]
 
+    # Cria coluna apenas para exibição da data sem hora
+    df_filtrado["DATA_EXIB"] = df_filtrado["DATA"].dt.strftime("%d/%m/%Y")
+
     # Formata colunas monetárias para exibição
     df_exibir = df_filtrado.copy()
     for col in ["GNV", "GAS", "TOTAL"]:
         df_exibir[col] = df_exibir[col].astype(float).apply(lambda x: f"R$ {x:.2f}")
 
-    # Exibe tabela
+    # Exibe tabela apenas com DATA_EXIB
     st.subheader("Registros Salvos")
-    st.dataframe(df_exibir)
+    st.dataframe(df_exibir[["DATA_EXIB", "GNV", "GAS", "TOTAL"]].rename(columns={"DATA_EXIB":"DATA"}))
 
     # TOTAL ACUMULADO
     total_gnv = df_filtrado["GNV"].astype(float).sum()
