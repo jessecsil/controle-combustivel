@@ -153,34 +153,25 @@ if os.path.exists(ARQUIVO):
         """, unsafe_allow_html=True)
 
        # ----------------------- Gráfico mensal -----------------------
+import matplotlib.pyplot as plt  # <- IMPORT ESSENCIAL
+
 with st.expander("📈 Mostrar gráfico de gastos mensais"):
-    # Converte colunas para float
     df_view["GNV_NUM"] = df_view["GNV"].astype(float)
     df_view["GAS_NUM"] = df_view["GAS"].astype(float)
 
-    # Cria coluna mês
-    df_view["MES"] = df_view["DATA"].dt.to_period("M")
+    # Soma total de GNV e Gasolina
+    total_gnv = df_view["GNV_NUM"].sum()
+    total_gas = df_view["GAS_NUM"].sum()
 
-    # Agrupa por mês
-    df_grafico = df_view.groupby("MES")[["GNV_NUM", "GAS_NUM"]].sum()
-    df_grafico.rename(columns={"GNV_NUM":"GNV", "GAS_NUM":"Gasolina"}, inplace=True)
-    df_grafico.index = df_grafico.index.astype(str)
-
-    # Soma dos totais para o gráfico
-    total_gnv = df_grafico["GNV"].sum()
-    total_gas = df_grafico["Gasolina"].sum()
-
-    # Dados para o gráfico de pizza
     labels = ["GNV", "Gasolina"]
     sizes = [total_gnv, total_gas]
     colors = ['#ffcc00', '#0099ff']
-    explode = (0.1, 0)  # Explodir a fatia do GNV para destacar
+    explode = (0.1, 0)
 
-    # Plotando o gráfico de pizza
     fig, ax = plt.subplots()
-    ax.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', shadow=True, startangle=90)
-    ax.axis('equal')  # Para deixar o gráfico com aspecto de círculo
+    ax.pie(sizes, explode=explode, labels=labels, colors=colors,
+           autopct='%1.1f%%', shadow=True, startangle=90)
+    ax.axis('equal')  # círculo perfeito
 
-    # Exibir o gráfico no Streamlit
     st.pyplot(fig)
 
