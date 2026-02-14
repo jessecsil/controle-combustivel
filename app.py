@@ -151,38 +151,3 @@ if os.path.exists(ARQUIVO):
         <strong>Total Geral:</strong> {moeda_brasil(total_geral)}
         </div>
         """, unsafe_allow_html=True)
-
-       # ----------------------- Gráfico mensal -----------------------
-import plotly.express as px  # Import necessário para Plotly
-
-# ----------------------- Gráfico de pizza -----------------------
-with st.expander("📈 Mostrar gráfico de gastos mensais"):
-    # Converte colunas para float
-    df_view["GNV_NUM"] = df_view["GNV"].astype(float)
-    df_view["GAS_NUM"] = df_view["GAS"].astype(float)
-
-    # Soma total de GNV e Gasolina
-    total_gnv = df_view["GNV_NUM"].sum()
-    total_gas = df_view["GAS_NUM"].sum()
-
-    # Dados para o gráfico
-    df_gastos = pd.DataFrame({
-        "Combustível": ["GNV", "Gasolina"],
-        "Valor": [total_gnv, total_gas]
-    })
-
-    # Cria gráfico de pizza
-    fig = px.pie(
-        df_gastos, 
-        names="Combustível", 
-        values="Valor", 
-        color="Combustível",
-        color_discrete_map={"GNV":"#ffcc00", "Gasolina":"#0099ff"},
-        hole=0.3,  # deixa o gráfico estilo “donut”
-        title="Distribuição de Gastos Mensais"
-    )
-
-    # Exibe no Streamlit
-    st.plotly_chart(fig, use_container_width=True)
-
-
