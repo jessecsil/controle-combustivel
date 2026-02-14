@@ -99,13 +99,11 @@ if os.path.exists(ARQUIVO):
         # Totais menores e organizados em linhas
         st.markdown(f"""
         <div style='font-size:14px;'>
-        <strong>Volume total:</strong> GNV = {total_gnv:.2f} m³ | Gasolina = {total_gas:.2f} L<br>
         <strong>Total GNV (R$):</strong> {total_gnv:.2f} R$<br>
         <strong>Total Gasolina (R$):</strong> {total_gas:.2f} R$<br>
         <strong>Total Geral:</strong> R$ {total_geral:.2f}
         </div>
         """, unsafe_allow_html=True)
-
 
         # ----------------------- Gráfico mensal -----------------------
         with st.expander("📈 Mostrar gráfico de gastos mensais"):
