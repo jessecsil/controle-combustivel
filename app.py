@@ -96,14 +96,14 @@ if os.path.exists(ARQUIVO):
         total_gas = df_filtrado["GAS"].astype(float).sum()
         total_geral = df_filtrado["TOTAL"].astype(float).sum()
 
-      st.markdown(f"""
-<div style='font-size:14px;'>
-<strong>Volume total:</strong> GNV = {total_gnv:.2f} m³ | Gasolina = {total_gas:.2f} L<br>
-<strong>Total GNV (R$):</strong> {total_gnv * v_gnv_unit:.2f} R$ &nbsp;&nbsp;
-<strong>Total Gasolina (R$):</strong> {total_gas * v_gas_unit:.2f} R$<br>
-<strong>Total Geral:</strong> R$ {total_geral:.2f}
-</div>
-""", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style='font-size:14px;'>
+        <strong>Volume total:</strong> GNV = {total_gnv:.2f} m³ | Gasolina = {total_gas:.2f} L<br>
+        <strong>Total GNV (R$):</strong> {total_gnv * v_gnv_unit:.2f} R$ &nbsp;&nbsp;
+        <strong>Total Gasolina (R$):</strong> {total_gas * v_gas_unit:.2f} R$<br>
+        <strong>Total Geral:</strong> R$ {total_geral:.2f}
+        </div>
+        """, unsafe_allow_html=True)
 
         # ----------------------- Gráfico mensal -----------------------
         with st.expander("📈 Mostrar gráfico de gastos mensais"):
