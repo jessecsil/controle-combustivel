@@ -15,8 +15,15 @@ if not os.path.exists(ARQUIVO):
 # FORMULÁRIO DE CADASTRO
 with st.form("meu_form", clear_on_submit=True):
     data_input = st.date_input("Data", datetime.now())
-    v_gnv = st.number_input("GNV (R$)")
-    v_gas = st.number_input("Gasolina (R$)")
+
+    # Campos de entrada sem mostrar 0,00
+    v_gnv_input = st.text_input("GNV (R$)", "")
+    v_gas_input = st.text_input("Gasolina (R$)", "")
+
+    # Converte para float ou assume 0 se vazio
+    v_gnv = float(v_gnv_input.replace(",", ".").strip()) if v_gnv_input.strip() != "" else 0.0
+    v_gas = float(v_gas_input.replace(",", ".").strip()) if v_gas_input.strip() != "" else 0.0
+
     submit = st.form_submit_button("SALVAR")
 
     if submit:
