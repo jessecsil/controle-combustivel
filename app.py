@@ -101,12 +101,12 @@ if os.path.exists(ARQUIVO):
         total_gas = df_filtrado["GAS"].astype(float).sum()
         total_geral = df_filtrado["TOTAL"].astype(float).sum()
 
-        # Totais menores e organizados em linhas
+        # Totais menores e organizados em linhas com moeda brasileira
         st.markdown(f"""
         <div style='font-size:18px;'>
-        <strong>Total GNV R$:</strong> {total_gnv:.2f}.apply(moeda_brasil) <br>
-        <strong>Total Gasolina R$:</strong> {total_gas:.2f} <br>
-        <strong>Total Geral R$:</strong> {total_geral:.2f}
+        <strong>Total GNV:</strong> {moeda_brasil(total_gnv)} <br>
+        <strong>Total Gasolina:</strong> {moeda_brasil(total_gas)} <br>
+        <strong>Total Geral:</strong> {moeda_brasil(total_geral)}
         </div>
         """, unsafe_allow_html=True)
 
