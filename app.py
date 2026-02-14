@@ -9,8 +9,8 @@ st.title("Abastece 2026")
 ARQUIVO = "dados.csv"
 
 if not os.path.exists(ARQUIVO):
-df_vazio = pd.DataFrame(columns=['DATA', 'GNV', 'GAS', 'TOTAL'])
-df_vazio.to_csv(ARQUIVO, index=False)
+  df_vazio = pd.DataFrame(columns=['DATA', 'GNV', 'GAS', 'TOTAL'])
+  df_vazio.to_csv(ARQUIVO, index=False)
 
 with st.form("form_abastece", clear_on_submit=True):
 data_input = st.date_input("Data", datetime.now())
