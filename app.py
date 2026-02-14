@@ -7,6 +7,43 @@ from datetime import datetime
 def moeda_brasil(valor):
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
+# ---------------- Função para salvar abastecimento ----------------
+def salvar_abastecimento(data_input, v_gnv, v_gas):
+    total = v_gnv + v_gas
+    data_formatada = data_input.strftime("%d/%m/%Y")
+    df_novo = pd.DataFrame([{
+        "DATA": data_formatada,
+        "GNV": v_gnv,
+        "GAS": v_gas,
+        "TOTAL": total
+    }])
+    df_novo.to_csv(ARQUIVO, mode="a", header=False, index=False)
+
+    return total
+
+# ---------------- Função para exibir a tabela de registros ----------------
+def exibir_tabela(df_filtrado):
+    df_style = df_filtrado[["DATA_EXIB", "GNV", "GAS", "TOTAL"]].copy()
+    df_style = df_style.rename(columns={"DATA_EXIB": "DATA"})
+    df_style["GNV"] = df_style["GNV"].astype(float).apply(moeda_brasil)
+    df_style["GAS"] = df_style["GAS"].astype(float).apply(moeda_brasil)
+    df_style["TOTAL"] = df_style["TOTAL"].astype(float).apply(moeda_brasil)
+    st.dataframe(df_style)
+
+# ---------------- Função para calcular totais ----------------
+def calcular_totais(df_filtrado):
+    total_gnv = df_filtrado["GNV"].astype(float).sum()
+    total_gas = df_filtrado["GAS"].astype(float).sum()
+    total_geral = df_filtrado["TOTAL"].astype(float).sum()
+
+    st.markdown(f"""
+    <div style='font-size:18px;'>
+    <strong>Total GNV:</strong> {moeda_brasil(total_gnv)} <br>
+    <strong>Total Gasolina:</strong> {moeda_brasil(total_gas)} <br>
+    <strong>Total Geral:</strong> {moeda_brasil(total_geral)}
+    </div>
+    """, unsafe_allow_html=True)
+
 # ----------------------- Configuração da página -----------------------
 st.markdown("""
 <h3 style='text-align: left;'>
@@ -15,7 +52,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("<h6 style='text-align:left;'>Controle de Combustível</h6>", unsafe_allow_html=True)
-
 
 ARQUIVO = "dados.csv"
 
@@ -53,22 +89,7 @@ with st.form("meu_form", clear_on_submit=True):
     submit = st.form_submit_button("💾 SALVAR")
 
     if submit:
-        # Calcula total somente após clicar em SALVAR
-        total = v_gnv + v_gas
-
-        # Formata a data
-        data_formatada = data_input.strftime("%d/%m/%Y")
-
-        # Cria DataFrame para salvar
-        df_novo = pd.DataFrame([{
-            "DATA": data_formatada,
-            "GNV": v_gnv,
-            "GAS": v_gas,
-            "TOTAL": total
-        }])
-
-        # Salva no CSV
-        df_novo.to_csv(ARQUIVO, mode="a", header=False, index=False)
+        total = salvar_abastecimento(data_input, v_gnv, v_gas)
 
         # Formata os valores para exibir ao usuário
         gnv_formatado = moeda_brasil(v_gnv)
@@ -89,7 +110,6 @@ with st.form("meu_form", clear_on_submit=True):
             """,
             unsafe_allow_html=True
         )
-
 
 
 # ----------------------- Botão limpar dados -----------------------
@@ -126,28 +146,8 @@ if os.path.exists(ARQUIVO):
 
         df_filtrado["DATA_EXIB"] = df_filtrado["DATA"].dt.strftime("%d/%m/%Y")
 
-        # ----------------------- Preparar tabela -----------------------
-        df_style = df_filtrado[["DATA_EXIB", "GNV", "GAS", "TOTAL"]].copy()
-        df_style = df_style.rename(columns={"DATA_EXIB": "DATA"})  # Renomeia antes do style
-        df_style["GNV"] = df_style["GNV"].astype(float).apply(moeda_brasil)
-        df_style["GAS"] = df_style["GAS"].astype(float).apply(moeda_brasil)
-        df_style["TOTAL"] = df_style["TOTAL"].astype(float).apply(moeda_brasil)
+        # ----------------------- Exibir a tabela de registros ----------------
+        exibir_tabela(df_filtrado)
 
-
-        # ----------------------- Tabela limpa -----------------------
-        st.subheader("📊 Registros Salvos")
-        st.dataframe(df_style)  # Tabela sem fundo colorido
-
-       # ----------------------- Totais -----------------------
-        total_gnv = df_filtrado["GNV"].astype(float).sum()
-        total_gas = df_filtrado["GAS"].astype(float).sum()
-        total_geral = df_filtrado["TOTAL"].astype(float).sum()
-
-        # Totais menores e organizados em linhas com moeda brasileira
-        st.markdown(f"""
-        <div style='font-size:18px;'>
-        <strong>Total GNV:</strong> {moeda_brasil(total_gnv)} <br>
-        <strong>Total Gasolina:</strong> {moeda_brasil(total_gas)} <br>
-        <strong>Total Geral:</strong> {moeda_brasil(total_geral)}
-        </div>
-        """, unsafe_allow_html=True)
+        # ----------------------- Calcular e exibir totais ----------------
+        calcular_totais(df_filtrado)
