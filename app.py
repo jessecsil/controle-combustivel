@@ -47,7 +47,7 @@ if os.path.exists(ARQUIVO):
     df_view = pd.read_csv(ARQUIVO, dtype=str)
 
     # Converte DATA para datetime
-    df_view["DATA"] = pd.to_datetime(df_view["DATA"], dayfirst=True)
+    df_view["DATA"] = pd.to_datetime(df_view["DATA"], dayfirst=True).dt.strftime("%d/%m/%Y")
 
     # Ordena do mais recente para o mais antigo
     df_view = df_view.sort_values(by="DATA", ascending=False)
