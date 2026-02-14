@@ -85,25 +85,12 @@ if os.path.exists(ARQUIVO):
     col2.metric("Total Gasolina", f"R$ {total_gas:.2f}")
     col3.metric("Total Geral", f"R$ {total_geral:.2f}")
 
-    # GRÁFICO MENSAL
-    df_view["GNV_NUM"] = df_view["GNV"].astype(float)
-    df_view["GAS_NUM"] = df_view["GAS"].astype(float)
-    df_view["MES"] = df_view["DATA"].dt.to_period("M")
-    df_grafico = df_view.groupby("MES")[["GNV_NUM", "GAS_NUM"]].sum()
-    df_grafico.rename(columns={"GNV_NUM":"GNV", "GAS_NUM":"Gasolina"}, inplace=True)
-    df_grafico.index = df_grafico.index.astype(str)
-
-    st.subheader("Gastos Mensais")
-    st.bar_chart(df_grafico)
-
-with st.expander("📊 Mostrar gráfico de gastos mensais"):
-    # GRÁFICO MENSAL
-    df_view["GNV_NUM"] = df_view["GNV"].astype(float)
-    df_view["GAS_NUM"] = df_view["GAS"].astype(float)
-    df_view["MES"] = df_view["DATA"].dt.to_period("M")
-    df_grafico = df_view.groupby("MES")[["GNV_NUM", "GAS_NUM"]].sum()
-    df_grafico.rename(columns={"GNV_NUM":"GNV", "GAS_NUM":"Gasolina"}, inplace=True)
-    df_grafico.index = df_grafico.index.astype(str)
-
-    st.bar_chart(df_grafico)
-
+    # GRÁFICO MENSAL DENTRO DE UM EXPANDER
+    with st.expander("📊 Mostrar gráfico de gastos mensais"):
+        df_view["GNV_NUM"] = df_view["GNV"].astype(float)
+        df_view["GAS_NUM"] = df_view["GAS"].astype(float)
+        df_view["MES"] = df_view["DATA"].dt.to_period("M")
+        df_grafico = df_view.groupby("MES")[["GNV_NUM", "GAS_NUM"]].sum()
+        df_grafico.rename(columns={"GNV_NUM":"GNV", "GAS_NUM":"Gasolina"}, inplace=True)
+        df_grafico.index = df_grafico.index.astype(str)
+        st.bar_chart(df_grafico)
