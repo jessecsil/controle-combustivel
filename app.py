@@ -5,9 +5,9 @@ from datetime import datetime
 
 # ----------------------- Configuração da página -----------------------
 st.markdown("""
-<h5 style='text-align: left;'>
+<h3 style='text-align: left;'>
 ⛽ Abastece 2026
-</h5>
+</h3>
 """, unsafe_allow_html=True)
 
 st.markdown("<h6 style='text-align:center;'>Controle de Combustível</h6>", unsafe_allow_html=True)
