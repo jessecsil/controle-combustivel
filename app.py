@@ -99,7 +99,6 @@ if os.path.exists(ARQUIVO):
         # Totais menores usando HTML
         st.markdown(f"""
         <div style='font-size:14px;'>
-        <strong>Volume total:</strong> GNV = {total_gnv:.2f} m³ | Gasolina = {total_gas:.2f} L<br>
         <strong>Total GNV (R$):</strong> {total_gnv:.2f} R$ &nbsp;&nbsp;
         <strong>Total Gasolina (R$):</strong> {total_gas:.2f} R$<br>
         <strong>Total Geral:</strong> R$ {total_geral:.2f}
