@@ -44,7 +44,7 @@ if st.button("🗑️ Apagar todos os dados"):
     if os.path.exists(ARQUIVO):
         os.remove(ARQUIVO)
         st.success("✅ Dados apagados com sucesso!")
-        st.experimental_rerun()
+        st.stop()  # Interrompe execução para evitar erros
 
 # ----------------------- Exibição dos dados -----------------------
 if os.path.exists(ARQUIVO):
