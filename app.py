@@ -67,26 +67,29 @@ if os.path.exists(ARQUIVO):
 
     df_filtrado["DATA_EXIB"] = df_filtrado["DATA"].dt.strftime("%d/%m/%Y")
 
-    # Formata colunas monetárias
+    # Formata colunas monetárias para exibição
     df_exibir = df_filtrado.copy()
     for col in ["GNV", "GAS", "TOTAL"]:
         df_exibir[col] = df_exibir[col].astype(float).apply(lambda x: f"R$ {x:.2f}")
 
-    # Tabela com destaque das maiores despesas
+    # ----------------------- Tabela com destaque -----------------------
     st.subheader("📊 Registros Salvos")
-    def highlight_maior(val, coluna):
-        max_val = df_filtrado[coluna].astype(float).max()
-        return 'background-color: #ffefc6' if float(val) == max_val and max_val != 0 else ''
 
-    st.dataframe(
+    # Função para destacar maiores valores usando df_filtrado original
+    def highlight_maior(col, coluna):
+        max_val = df_filtrado[coluna].astype(float).max()
+        return ['background-color: #ffefc6' if float(x) == max_val and max_val != 0 else '' for x in col]
+
+    styled_df = (
         df_exibir[["DATA_EXIB", "GNV", "GAS", "TOTAL"]]
         .rename(columns={"DATA_EXIB":"DATA"})
-        .style.applymap(lambda v: highlight_maior(v, "GNV"), subset=["GNV"])
-        .applymap(lambda v: highlight_maior(v, "GAS"), subset=["GAS"])
-        .applymap(lambda v: highlight_maior(v, "TOTAL"), subset=["TOTAL"])
+        .style.apply(lambda col: highlight_maior(col, "GNV"), subset=["GNV"])
+        .apply(lambda col: highlight_maior(col, "GAS"), subset=["GAS"])
+        .apply(lambda col: highlight_maior(col, "TOTAL"), subset=["TOTAL"])
     )
+    st.dataframe(styled_df)
 
-    # Totais em cartões visuais
+    # ----------------------- Totais -----------------------
     total_gnv = df_filtrado["GNV"].astype(float).sum()
     total_gas = df_filtrado["GAS"].astype(float).sum()
     total_geral = df_filtrado["TOTAL"].astype(float).sum()
@@ -97,7 +100,7 @@ if os.path.exists(ARQUIVO):
     col2.metric("Total Gasolina", f"R$ {total_gas:.2f}", delta=None)
     col3.metric("Total Geral", f"R$ {total_geral:.2f}", delta=None)
 
-    # GRÁFICO MENSAL DENTRO DE EXPANDER
+    # ----------------------- Gráfico mensal -----------------------
     with st.expander("📈 Mostrar gráfico de gastos mensais"):
         df_view["GNV_NUM"] = df_view["GNV"].astype(float)
         df_view["GAS_NUM"] = df_view["GAS"].astype(float)
