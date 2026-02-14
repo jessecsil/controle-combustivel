@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from datetime import datetime
 
-# ----------------------- Configurações da página -----------------------
+# ----------------------- Configuração da página -----------------------
 st.set_page_config(page_title="⛽ Abastece 2026", layout="wide")
 st.markdown("<h1 style='text-align:center;'>⛽ Painel de Controle de Combustível</h1>", unsafe_allow_html=True)
 
@@ -18,16 +18,13 @@ with st.form("meu_form", clear_on_submit=True):
     st.subheader("📋 Registrar Abastecimento")
     data_input = st.date_input("Data", datetime.now())
 
-    # Campos de entrada com placeholder
     v_gnv_input = st.text_input("GNV (R$)", placeholder="Digite o valor")
     v_gas_input = st.text_input("Gasolina (R$)", placeholder="Digite o valor")
 
-    # Converte para float ou assume 0 se vazio
     v_gnv = float(v_gnv_input.replace(",", ".").strip()) if v_gnv_input.strip() != "" else 0.0
     v_gas = float(v_gas_input.replace(",", ".").strip()) if v_gas_input.strip() != "" else 0.0
 
     submit = st.form_submit_button("💾 SALVAR")
-
     if submit:
         total = v_gnv + v_gas
         data_formatada = data_input.strftime("%d/%m/%Y")
@@ -55,7 +52,6 @@ if os.path.exists(ARQUIVO):
     df_view["DATA"] = pd.to_datetime(df_view["DATA"], dayfirst=True)
     df_view = df_view.sort_values(by="DATA", ascending=False)
 
-    # FILTRO POR PERÍODO
     st.subheader("📅 Filtrar por período")
     min_date = df_view["DATA"].min()
     max_date = df_view["DATA"].max()
@@ -67,9 +63,9 @@ if os.path.exists(ARQUIVO):
 
     df_filtrado["DATA_EXIB"] = df_filtrado["DATA"].dt.strftime("%d/%m/%Y")
 
-    # ----------------------- Tabela com destaque -----------------------
-    st.subheader("📊 Registros Salvos")
+    # ----------------------- Preparar tabela -----------------------
     df_style = df_filtrado[["DATA_EXIB", "GNV", "GAS", "TOTAL"]].copy()
+    df_style = df_style.rename(columns={"DATA_EXIB": "DATA"})  # Renomeia antes do style
     df_style["GNV"] = df_style["GNV"].astype(float)
     df_style["GAS"] = df_style["GAS"].astype(float)
     df_style["TOTAL"] = df_style["TOTAL"].astype(float)
@@ -82,7 +78,8 @@ if os.path.exists(ARQUIVO):
     styled_df = df_style.style.apply(highlight_max, subset=["GNV"])\
                               .apply(highlight_max, subset=["GAS"])\
                               .apply(highlight_max, subset=["TOTAL"])
-    styled_df = styled_df.rename(lambda x: "DATA" if x=="DATA_EXIB" else x, axis=1)
+
+    st.subheader("📊 Registros Salvos")
     st.dataframe(styled_df)
 
     # ----------------------- Totais -----------------------
