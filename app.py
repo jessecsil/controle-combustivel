@@ -52,11 +52,7 @@ with st.form("meu_form", clear_on_submit=True):
     # Botão de salvar
     submit = st.form_submit_button("💾 SALVAR")
 
-    if submit:
-        # Calcula total
-        total = v_gnv + v_gas
-
-        # Formata a data
+            # Formata a data
         data_formatada = data_input.strftime("%d/%m/%Y")
 
         # Cria DataFrame para salvar
