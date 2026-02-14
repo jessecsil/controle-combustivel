@@ -152,12 +152,29 @@ if os.path.exists(ARQUIVO):
         </div>
         """, unsafe_allow_html=True)
 
-        # ----------------------- Gráfico mensal -----------------------
-        with st.expander("📈 Mostrar gráfico de gastos mensais"):
-            df_view["GNV_NUM"] = df_view["GNV"].astype(float)
-            df_view["GAS_NUM"] = df_view["GAS"].astype(float)
-            df_view["MES"] = df_view["DATA"].dt.to_period("M")
-            df_grafico = df_view.groupby("MES")[["GNV_NUM", "GAS_NUM"]].sum()
-            df_grafico.rename(columns={"GNV_NUM":"GNV", "GAS_NUM":"Gasolina"}, inplace=True)
-            df_grafico.index = df_grafico.index.astype(str)
-            st.bar_chart(df_grafico)
+       # ----------------------- Gráfico mensal -----------------------
+with st.expander("📈 Mostrar gráficos de gastos mensais"):
+    # Converte colunas para float
+    df_view["GNV_NUM"] = df_view["GNV"].astype(float)
+    df_view["GAS_NUM"] = df_view["GAS"].astype(float)
+
+    # Cria coluna mês
+    df_view["MES"] = df_view["DATA"].dt.to_period("M")
+
+    # Agrupa por mês
+    df_grafico = df_view.groupby("MES")[["GNV_NUM", "GAS_NUM"]].sum()
+    df_grafico.rename(columns={"GNV_NUM":"GNV", "GAS_NUM":"Gasolina"}, inplace=True)
+    df_grafico.index = df_grafico.index.astype(str)
+
+    # Cria duas colunas lado a lado
+    col1, col2 = st.columns(2)
+
+    # Gráfico GNV
+    with col1:
+        st.subheader("GNV (R$)")
+        st.bar_chart(df_grafico[["GNV"]])
+
+    # Gráfico Gasolina
+    with col2:
+        st.subheader("Gasolina (R$)")
+        st.bar_chart(df_grafico[["Gasolina"]])
