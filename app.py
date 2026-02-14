@@ -4,7 +4,12 @@ import os
 from datetime import datetime
 
 # ----------------------- Configuração da página -----------------------
-st.set_page_config(page_title="⛽ Abastece 2026", layout="wide")
+st.markdown("""
+<h5 style='text-align: left;'>
+⛽ Abastece 2026
+</h5>
+""", unsafe_allow_html=True)
+
 st.markdown("<h5 style='text-align:center;'>⛽ Controle de Combustível</h5>", unsafe_allow_html=True)
 
 
