@@ -153,9 +153,11 @@ if os.path.exists(ARQUIVO):
         """, unsafe_allow_html=True)
 
        # ----------------------- Gráfico mensal -----------------------
-import matplotlib.pyplot as plt  # <- IMPORT ESSENCIAL
+import plotly.express as px  # Import necessário para Plotly
 
+# ----------------------- Gráfico de pizza -----------------------
 with st.expander("📈 Mostrar gráfico de gastos mensais"):
+    # Converte colunas para float
     df_view["GNV_NUM"] = df_view["GNV"].astype(float)
     df_view["GAS_NUM"] = df_view["GAS"].astype(float)
 
@@ -163,15 +165,24 @@ with st.expander("📈 Mostrar gráfico de gastos mensais"):
     total_gnv = df_view["GNV_NUM"].sum()
     total_gas = df_view["GAS_NUM"].sum()
 
-    labels = ["GNV", "Gasolina"]
-    sizes = [total_gnv, total_gas]
-    colors = ['#ffcc00', '#0099ff']
-    explode = (0.1, 0)
+    # Dados para o gráfico
+    df_gastos = pd.DataFrame({
+        "Combustível": ["GNV", "Gasolina"],
+        "Valor": [total_gnv, total_gas]
+    })
 
-    fig, ax = plt.subplots()
-    ax.pie(sizes, explode=explode, labels=labels, colors=colors,
-           autopct='%1.1f%%', shadow=True, startangle=90)
-    ax.axis('equal')  # círculo perfeito
+    # Cria gráfico de pizza
+    fig = px.pie(
+        df_gastos, 
+        names="Combustível", 
+        values="Valor", 
+        color="Combustível",
+        color_discrete_map={"GNV":"#ffcc00", "Gasolina":"#0099ff"},
+        hole=0.3,  # deixa o gráfico estilo “donut”
+        title="Distribuição de Gastos Mensais"
+    )
 
-    st.pyplot(fig)
+    # Exibe no Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
 
