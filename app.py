@@ -10,7 +10,7 @@ st.markdown("""
 </h5>
 """, unsafe_allow_html=True)
 
-st.markdown("<h5 style='text-align:center;'>⛽ Controle de Combustível</h5>", unsafe_allow_html=True)
+st.markdown("<h6 style='text-align:center;'>Controle de Combustível</h6>", unsafe_allow_html=True)
 
 
 ARQUIVO = "dados.csv"
