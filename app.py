@@ -44,13 +44,51 @@ if st.button("🗑️ Apagar todos os dados"):
 
 # EXIBIÇÃO DOS DADOS
 if os.path.exists(ARQUIVO):
-    # Lê CSV forçando tudo como string
     df_view = pd.read_csv(ARQUIVO, dtype=str)
 
-    # Converte datas para datetime
+    # Converte DATA para datetime
     df_view["DATA"] = pd.to_datetime(df_view["DATA"], dayfirst=True)
 
     # Ordena do mais recente para o mais antigo
     df_view = df_view.sort_values(by="DATA", ascending=False)
 
-    # F
+    # FILTRO POR PERÍODO
+    st.subheader("Filtrar por período")
+    min_date = df_view["DATA"].min()
+    max_date = df_view["DATA"].max()
+    start_date = st.date_input("De", min_date)
+    end_date = st.date_input("Até", max_date)
+
+    df_filtrado = df_view[(df_view["DATA"] >= pd.to_datetime(start_date)) &
+                          (df_view["DATA"] <= pd.to_datetime(end_date))]
+
+    # Formata colunas monetárias para exibição
+    df_exibir = df_filtrado.copy()
+    for col in ["GNV", "GAS", "TOTAL"]:
+        df_exibir[col] = df_exibir[col].astype(float).apply(lambda x: f"R$ {x:.2f}")
+
+    # Exibe tabela
+    st.subheader("Registros Salvos")
+    st.dataframe(df_exibir)
+
+    # TOTAL ACUMULADO
+    total_gnv = df_filtrado["GNV"].astype(float).sum()
+    total_gas = df_filtrado["GAS"].astype(float).sum()
+    total_geral = df_filtrado["TOTAL"].astype(float).sum()
+
+    st.subheader("Totais")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total GNV", f"R$ {total_gnv:.2f}")
+    col2.metric("Total Gasolina", f"R$ {total_gas:.2f}")
+    col3.metric("Total Geral", f"R$ {total_geral:.2f}")
+
+    # GRÁFICO MENSAL
+    df_view["GNV_NUM"] = df_view["GNV"].astype(float)
+    df_view["GAS_NUM"] = df_view["GAS"].astype(float)
+    df_view["MES"] = df_view["DATA"].dt.to_period("M")
+    df_grafico = df_view.groupby("MES")[["GNV_NUM", "GAS_NUM"]].sum()
+    df_grafico.rename(columns={"GNV_NUM":"GNV", "GAS_NUM":"Gasolina"}, inplace=True)
+    df_grafico.index = df_grafico.index.astype(str)
+
+    st.subheader("Gastos Mensais")
+    st.bar_chart(df_grafico)
