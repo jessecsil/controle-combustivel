@@ -21,6 +21,7 @@ with st.form("meu_form", clear_on_submit=True):
     v_gnv_input = st.text_input("GNV (R$)", placeholder="Digite o valor")
     v_gas_input = st.text_input("Gasolina (R$)", placeholder="Digite o valor")
 
+    # Converte para float ou assume 0
     v_gnv = float(v_gnv_input.replace(",", ".").strip()) if v_gnv_input.strip() != "" else 0.0
     v_gas = float(v_gas_input.replace(",", ".").strip()) if v_gas_input.strip() != "" else 0.0
 
@@ -49,56 +50,66 @@ if st.button("🗑️ Apagar todos os dados"):
 # ----------------------- Exibição dos dados -----------------------
 if os.path.exists(ARQUIVO):
     df_view = pd.read_csv(ARQUIVO, dtype=str)
-    df_view["DATA"] = pd.to_datetime(df_view["DATA"], dayfirst=True)
-    df_view = df_view.sort_values(by="DATA", ascending=False)
+    if not df_view.empty:
+        df_view["DATA"] = pd.to_datetime(df_view["DATA"], dayfirst=True)
+        df_view = df_view.sort_values(by="DATA", ascending=False)
+    else:
+        df_view["DATA"] = pd.to_datetime([])
 
+    # ----------------------- Filtrar por período -----------------------
     st.subheader("📅 Filtrar por período")
-    min_date = df_view["DATA"].min()
-    max_date = df_view["DATA"].max()
+    if df_view.empty:
+        min_date = datetime.now().date()
+        max_date = datetime.now().date()
+    else:
+        min_date = df_view["DATA"].min().date()
+        max_date = df_view["DATA"].max().date()
+
     start_date = st.date_input("De", min_date)
     end_date = st.date_input("Até", max_date)
 
-    df_filtrado = df_view[(df_view["DATA"] >= pd.to_datetime(start_date)) &
-                          (df_view["DATA"] <= pd.to_datetime(end_date))]
+    if not df_view.empty:
+        df_filtrado = df_view[(df_view["DATA"] >= pd.to_datetime(start_date)) &
+                              (df_view["DATA"] <= pd.to_datetime(end_date))]
 
-    df_filtrado["DATA_EXIB"] = df_filtrado["DATA"].dt.strftime("%d/%m/%Y")
+        df_filtrado["DATA_EXIB"] = df_filtrado["DATA"].dt.strftime("%d/%m/%Y")
 
-    # ----------------------- Preparar tabela -----------------------
-    df_style = df_filtrado[["DATA_EXIB", "GNV", "GAS", "TOTAL"]].copy()
-    df_style = df_style.rename(columns={"DATA_EXIB": "DATA"})  # Renomeia antes do style
-    df_style["GNV"] = df_style["GNV"].astype(float)
-    df_style["GAS"] = df_style["GAS"].astype(float)
-    df_style["TOTAL"] = df_style["TOTAL"].astype(float)
+        # ----------------------- Preparar tabela -----------------------
+        df_style = df_filtrado[["DATA_EXIB", "GNV", "GAS", "TOTAL"]].copy()
+        df_style = df_style.rename(columns={"DATA_EXIB": "DATA"})  # Renomeia antes do style
+        df_style["GNV"] = df_style["GNV"].astype(float)
+        df_style["GAS"] = df_style["GAS"].astype(float)
+        df_style["TOTAL"] = df_style["TOTAL"].astype(float)
 
-    # Função para destacar maiores valores
-    def highlight_max(s):
-        is_max = s == s.max()
-        return ['background-color: #ffefc6' if v else '' for v in is_max]
+        # Função para destacar maiores valores
+        def highlight_max(s):
+            is_max = s == s.max()
+            return ['background-color: #ffefc6' if v else '' for v in is_max]
 
-    styled_df = df_style.style.apply(highlight_max, subset=["GNV"])\
-                              .apply(highlight_max, subset=["GAS"])\
-                              .apply(highlight_max, subset=["TOTAL"])
+        styled_df = df_style.style.apply(highlight_max, subset=["GNV"])\
+                                  .apply(highlight_max, subset=["GAS"])\
+                                  .apply(highlight_max, subset=["TOTAL"])
 
-    st.subheader("📊 Registros Salvos")
-    st.dataframe(styled_df)
+        st.subheader("📊 Registros Salvos")
+        st.dataframe(styled_df)
 
-    # ----------------------- Totais -----------------------
-    total_gnv = df_filtrado["GNV"].astype(float).sum()
-    total_gas = df_filtrado["GAS"].astype(float).sum()
-    total_geral = df_filtrado["TOTAL"].astype(float).sum()
+        # ----------------------- Totais -----------------------
+        total_gnv = df_filtrado["GNV"].astype(float).sum()
+        total_gas = df_filtrado["GAS"].astype(float).sum()
+        total_geral = df_filtrado["TOTAL"].astype(float).sum()
 
-    st.subheader("💰 Totais")
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total GNV", f"R$ {total_gnv:.2f}")
-    col2.metric("Total Gasolina", f"R$ {total_gas:.2f}")
-    col3.metric("Total Geral", f"R$ {total_geral:.2f}")
+        st.subheader("💰 Totais")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total GNV", f"R$ {total_gnv:.2f}")
+        col2.metric("Total Gasolina", f"R$ {total_gas:.2f}")
+        col3.metric("Total Geral", f"R$ {total_geral:.2f}")
 
-    # ----------------------- Gráfico mensal -----------------------
-    with st.expander("📈 Mostrar gráfico de gastos mensais"):
-        df_view["GNV_NUM"] = df_view["GNV"].astype(float)
-        df_view["GAS_NUM"] = df_view["GAS"].astype(float)
-        df_view["MES"] = df_view["DATA"].dt.to_period("M")
-        df_grafico = df_view.groupby("MES")[["GNV_NUM", "GAS_NUM"]].sum()
-        df_grafico.rename(columns={"GNV_NUM":"GNV", "GAS_NUM":"Gasolina"}, inplace=True)
-        df_grafico.index = df_grafico.index.astype(str)
-        st.bar_chart(df_grafico)
+        # ----------------------- Gráfico mensal -----------------------
+        with st.expander("📈 Mostrar gráfico de gastos mensais"):
+            df_view["GNV_NUM"] = df_view["GNV"].astype(float)
+            df_view["GAS_NUM"] = df_view["GAS"].astype(float)
+            df_view["MES"] = df_view["DATA"].dt.to_period("M")
+            df_grafico = df_view.groupby("MES")[["GNV_NUM", "GAS_NUM"]].sum()
+            df_grafico.rename(columns={"GNV_NUM":"GNV", "GAS_NUM":"Gasolina"}, inplace=True)
+            df_grafico.index = df_grafico.index.astype(str)
+            st.bar_chart(df_grafico)
