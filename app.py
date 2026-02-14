@@ -16,6 +16,20 @@ with st.form("meu_form", clear_on_submit=True):
   v_gnv = st.number_input("GNV (R$)")
   v_gas = st.number_input("Gasolina (R$)")
   submit = st.form_submit_button("SALVAR")
+  if submit:
+    data_formatada = data_input.strftime("%d/%m/%Y")
+    total = v_gnv + v_gas
+
+    df_novo = pd.DataFrame([{
+        "DATA": data_formatada,
+        "GNV": v_gnv,
+        "GAS": v_gas,
+        "TOTAL": total
+    }])
+
+    df_novo.to_csv(ARQUIVO, mode="a", header=False, index=False)
+
+    st.success("Salvo com sucesso!")
 
 st.divider()
 
