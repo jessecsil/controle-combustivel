@@ -63,24 +63,24 @@ with st.form("meu_form", clear_on_submit=True):
         "TOTAL": total
         }])
 
-        # Salva no CSV
-        df_novo.to_csv(ARQUIVO, mode="a", header=False, index=False)
+    # Salva no CSV
+    df_novo.to_csv(ARQUIVO, mode="a", header=False, index=False)
 
-        # Formata os valores para exibir ao usuário
-        gnv_formatado = moeda_brasil(v_gnv)
-        gas_formatado = moeda_brasil(v_gas)
-        total_formatado = moeda_brasil(total)
+    # Formata os valores para exibir ao usuário
+    gnv_formatado = moeda_brasil(v_gnv)
+    gas_formatado = moeda_brasil(v_gas)
+    total_formatado = moeda_brasil(total)
 
-        # Mostra mensagem de sucesso
-        st.success("✅ Salvo com sucesso!")
+    # Mostra mensagem de sucesso
+    st.success("✅ Salvo com sucesso!")
 
-        # Exibe os valores formatados de forma clara
-        st.markdown(
-            f"""
-            <div style='font-size:14px;'>
-                <strong>GNV:</strong> {gnv_formatado} <br>
-                <strong>Gasolina:</strong> {gas_formatado} <br>
-                <strong>Total:</strong> {total_formatado}
+    # Exibe os valores formatados de forma clara
+    st.markdown(
+        f"""
+        <div style='font-size:14px;'>
+            <strong>GNV:</strong> {gnv_formatado} <br>
+            <strong>Gasolina:</strong> {gas_formatado} <br>
+            <strong>Total:</strong> {total_formatado}
             </div>
             """,
             unsafe_allow_html=True
