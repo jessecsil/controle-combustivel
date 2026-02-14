@@ -67,26 +67,22 @@ if os.path.exists(ARQUIVO):
 
     df_filtrado["DATA_EXIB"] = df_filtrado["DATA"].dt.strftime("%d/%m/%Y")
 
-    # Formata colunas monetárias para exibição
-    df_exibir = df_filtrado.copy()
-    for col in ["GNV", "GAS", "TOTAL"]:
-        df_exibir[col] = df_exibir[col].astype(float).apply(lambda x: f"R$ {x:.2f}")
-
     # ----------------------- Tabela com destaque -----------------------
     st.subheader("📊 Registros Salvos")
+    df_style = df_filtrado[["DATA_EXIB", "GNV", "GAS", "TOTAL"]].copy()
+    df_style["GNV"] = df_style["GNV"].astype(float)
+    df_style["GAS"] = df_style["GAS"].astype(float)
+    df_style["TOTAL"] = df_style["TOTAL"].astype(float)
 
-    # Função para destacar maiores valores usando df_filtrado original
-    def highlight_maior(col, coluna):
-        max_val = df_filtrado[coluna].astype(float).max()
-        return ['background-color: #ffefc6' if float(x) == max_val and max_val != 0 else '' for x in col]
+    # Função para destacar maiores valores
+    def highlight_max(s):
+        is_max = s == s.max()
+        return ['background-color: #ffefc6' if v else '' for v in is_max]
 
-    styled_df = (
-        df_exibir[["DATA_EXIB", "GNV", "GAS", "TOTAL"]]
-        .rename(columns={"DATA_EXIB":"DATA"})
-        .style.apply(lambda col: highlight_maior(col, "GNV"), subset=["GNV"])
-        .apply(lambda col: highlight_maior(col, "GAS"), subset=["GAS"])
-        .apply(lambda col: highlight_maior(col, "TOTAL"), subset=["TOTAL"])
-    )
+    styled_df = df_style.style.apply(highlight_max, subset=["GNV"])\
+                              .apply(highlight_max, subset=["GAS"])\
+                              .apply(highlight_max, subset=["TOTAL"])
+    styled_df = styled_df.rename(lambda x: "DATA" if x=="DATA_EXIB" else x, axis=1)
     st.dataframe(styled_df)
 
     # ----------------------- Totais -----------------------
@@ -96,9 +92,9 @@ if os.path.exists(ARQUIVO):
 
     st.subheader("💰 Totais")
     col1, col2, col3 = st.columns(3)
-    col1.metric("Total GNV", f"R$ {total_gnv:.2f}", delta=None)
-    col2.metric("Total Gasolina", f"R$ {total_gas:.2f}", delta=None)
-    col3.metric("Total Geral", f"R$ {total_geral:.2f}", delta=None)
+    col1.metric("Total GNV", f"R$ {total_gnv:.2f}")
+    col2.metric("Total Gasolina", f"R$ {total_gas:.2f}")
+    col3.metric("Total Geral", f"R$ {total_geral:.2f}")
 
     # ----------------------- Gráfico mensal -----------------------
     with st.expander("📈 Mostrar gráfico de gastos mensais"):
