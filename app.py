@@ -21,7 +21,7 @@ if not os.path.exists(ARQUIVO):
 
 # ----------------------- Formulário de cadastro -----------------------
 with st.form("meu_form", clear_on_submit=True):
-    st.subheader("📋 Registrar Abastecimento</h2>")
+    st.subheader("📋 Registrar Abastecimento")
     data_input = st.date_input("Data", datetime.now())
 
     v_gnv_input = st.text_input("GNV (R$)", placeholder="Digite o valor")
