@@ -26,65 +26,70 @@ if not os.path.exists(ARQUIVO):
 # ----------------------- Formulário de cadastro -----------------------
 with st.form("meu_form", clear_on_submit=True):
     st.markdown("<h5>📋 Registrar Abastecimento</h5>", unsafe_allow_html=True)
-    
+
     # Data do abastecimento
     data_input = st.date_input("Data", datetime.now())
 
     # Valores iniciais
     valor_inicial = 0.00
 
-    # Campos de entrada para GNV e Gasolina, já com 0,00
+    # Campos de entrada para GNV e Gasolina
     v_gnv = st.number_input(
-        label="GNV (R$)", 
-        min_value=0.0, 
-        value=valor_inicial, 
-        step=0.01, 
+        label="GNV (R$)",
+        min_value=0.0,
+        value=valor_inicial,
+        step=0.01,
         format="%.2f"
     )
     v_gas = st.number_input(
-        label="Gasolina (R$)", 
-        min_value=0.0, 
-        value=valor_inicial, 
-        step=0.01, 
+        label="Gasolina (R$)",
+        min_value=0.0,
+        value=valor_inicial,
+        step=0.01,
         format="%.2f"
     )
 
     # Botão de salvar
     submit = st.form_submit_button("💾 SALVAR")
 
-    # Formata a data
-    data_formatada = data_input.strftime("%d/%m/%Y")
+    if submit:
+        # Calcula total somente após clicar em SALVAR
+        total = v_gnv + v_gas
 
-    # Cria DataFrame para salvar
-    df_novo = pd.DataFrame([{
-        "DATA": data_formatada,
-        "GNV": v_gnv,
-        "GAS": v_gas,
-        "TOTAL": total
+        # Formata a data
+        data_formatada = data_input.strftime("%d/%m/%Y")
+
+        # Cria DataFrame para salvar
+        df_novo = pd.DataFrame([{
+            "DATA": data_formatada,
+            "GNV": v_gnv,
+            "GAS": v_gas,
+            "TOTAL": total
         }])
 
-    # Salva no CSV
-    df_novo.to_csv(ARQUIVO, mode="a", header=False, index=False)
+        # Salva no CSV
+        df_novo.to_csv(ARQUIVO, mode="a", header=False, index=False)
 
-    # Formata os valores para exibir ao usuário
-    gnv_formatado = moeda_brasil(v_gnv)
-    gas_formatado = moeda_brasil(v_gas)
-    total_formatado = moeda_brasil(total)
+        # Formata os valores para exibir ao usuário
+        gnv_formatado = moeda_brasil(v_gnv)
+        gas_formatado = moeda_brasil(v_gas)
+        total_formatado = moeda_brasil(total)
 
-    # Mostra mensagem de sucesso
-    st.success("✅ Salvo com sucesso!")
+        # Mensagem de sucesso
+        st.success("✅ Salvo com sucesso!")
 
-    # Exibe os valores formatados de forma clara
-    st.markdown(
-        f"""
-        <div style='font-size:14px;'>
-            <strong>GNV:</strong> {gnv_formatado} <br>
-            <strong>Gasolina:</strong> {gas_formatado} <br>
-            <strong>Total:</strong> {total_formatado}
+        # Exibe os valores formatados
+        st.markdown(
+            f"""
+            <div style='font-size:14px;'>
+                <strong>GNV:</strong> {gnv_formatado} <br>
+                <strong>Gasolina:</strong> {gas_formatado} <br>
+                <strong>Total:</strong> {total_formatado}
             </div>
             """,
             unsafe_allow_html=True
         )
+
 
 
 # ----------------------- Botão limpar dados -----------------------
