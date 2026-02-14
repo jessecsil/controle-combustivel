@@ -83,9 +83,10 @@ if os.path.exists(ARQUIVO):
         # ----------------------- Preparar tabela -----------------------
         df_style = df_filtrado[["DATA_EXIB", "GNV", "GAS", "TOTAL"]].copy()
         df_style = df_style.rename(columns={"DATA_EXIB": "DATA"})  # Renomeia antes do style
-        df_style["GNV"] = df_style["GNV"].astype(float)
-        df_style["GAS"] = df_style["GAS"].astype(float)
-        df_style["TOTAL"] = df_style["TOTAL"].astype(float)
+        df_style["GNV"] = df_style["GNV"].astype(float).apply(moeda_brasil)
+        df_style["GAS"] = df_style["GAS"].astype(float).apply(moeda_brasil)
+        df_style["TOTAL"] = df_style["TOTAL"].astype(float).apply(moeda_brasil)
+
 
         # ----------------------- Tabela limpa -----------------------
         st.subheader("📊 Registros Salvos")
