@@ -33,5 +33,9 @@ with st.form("meu_form", clear_on_submit=True):
 
 st.divider()
 
-if os.path.exists(ARQUIVO):
-  df_view = pd.read_csv(ARQUIVO)
+# BOTÃO PARA APAGAR TODOS OS DADOS
+if st.button("🗑️ Apagar todos os dados"):
+    if os.path.exists(ARQUIVO):
+        os.remove(ARQUIVO)
+        st.success("Dados apagados com sucesso!")
+        st.rerun()
