@@ -3,6 +3,10 @@ import pandas as pd
 import os
 from datetime import datetime
 
+# ---------------- Função para formatar valores como moeda ----------------
+def moeda_brasil(valor):
+    return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
 # ----------------------- Configuração da página -----------------------
 st.markdown("""
 <h3 style='text-align: left;'>
