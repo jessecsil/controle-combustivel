@@ -5,7 +5,7 @@ from datetime import datetime
 
 # ----------------------- Configuração da página -----------------------
 st.set_page_config(page_title="⛽ Abastece 2026", layout="wide")
-st.markdown("<h1 style='text-align:center;'>⛽ABASTECE 2026</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center;'>⛽ Painel de Controle de Combustível</h1>", unsafe_allow_html=True)
 
 ARQUIVO = "dados.csv"
 
@@ -18,16 +18,23 @@ with st.form("meu_form", clear_on_submit=True):
     st.subheader("📋 Registrar Abastecimento")
     data_input = st.date_input("Data", datetime.now())
 
-    v_gnv_input = st.text_input("GNV (R$)", placeholder="Digite o valor")
-    v_gas_input = st.text_input("Gasolina (R$)", placeholder="Digite o valor")
+    # Entradas de volumes
+    v_gnv_input = st.text_input("GNV (m³)", placeholder="Digite o volume em m³")
+    v_gas_input = st.text_input("Gasolina (L)", placeholder="Digite o volume em litros")
 
     # Converte para float ou assume 0
     v_gnv = float(v_gnv_input.replace(",", ".").strip()) if v_gnv_input.strip() != "" else 0.0
     v_gas = float(v_gas_input.replace(",", ".").strip()) if v_gas_input.strip() != "" else 0.0
 
+    # Se quiser adicionar valor monetário, descomente abaixo:
+    # v_gnv_valor = st.number_input("Preço GNV (R$)")
+    # v_gas_valor = st.number_input("Preço Gasolina (R$)")
+    # total = v_gnv_valor + v_gas_valor
+
+    total = v_gnv + v_gas  # soma simples dos volumes
+
     submit = st.form_submit_button("💾 SALVAR")
     if submit:
-        total = v_gnv + v_gas
         data_formatada = data_input.strftime("%d/%m/%Y")
         df_novo = pd.DataFrame([{
             "DATA": data_formatada,
@@ -76,22 +83,18 @@ if os.path.exists(ARQUIVO):
 
         # ----------------------- Preparar tabela -----------------------
         df_style = df_filtrado[["DATA_EXIB", "GNV", "GAS", "TOTAL"]].copy()
-        df_style = df_style.rename(columns={"DATA_EXIB": "DATA"})  # Renomeia antes do style
-        df_style["GNV"] = df_style["GNV"].astype(float)
-        df_style["GAS"] = df_style["GAS"].astype(float)
+        df_style = df_style.rename(columns={
+            "DATA_EXIB": "DATA",
+            "GNV": "GNV (m³)",
+            "GAS": "Gasolina (L)"
+        })
+        df_style["GNV (m³)"] = df_style["GNV (m³)"].astype(float)
+        df_style["Gasolina (L)"] = df_style["Gasolina (L)"].astype(float)
         df_style["TOTAL"] = df_style["TOTAL"].astype(float)
 
-        # Função para destacar maiores valores
-        def highlight_max(s):
-            is_max = s == s.max()
-            return ['background-color: #ffefc6' if v else '' for v in is_max]
-
-        styled_df = df_style.style.apply(highlight_max, subset=["GNV"])\
-                                  .apply(highlight_max, subset=["GAS"])\
-                                  .apply(highlight_max, subset=["TOTAL"])
-
+        # ----------------------- Tabela limpa -----------------------
         st.subheader("📊 Registros Salvos")
-        st.dataframe(df_style)
+        st.dataframe(df_style)  # sem fundo colorido
 
         # ----------------------- Totais -----------------------
         total_gnv = df_filtrado["GNV"].astype(float).sum()
@@ -100,16 +103,16 @@ if os.path.exists(ARQUIVO):
 
         st.subheader("💰 Totais")
         col1, col2, col3 = st.columns(3)
-        col1.metric("Total GNV", f"R$ {total_gnv:.2f}")
-        col2.metric("Total Gasolina", f"R$ {total_gas:.2f}")
-        col3.metric("Total Geral", f"R$ {total_geral:.2f}")
+        col1.metric("Total GNV (m³)", f"{total_gnv:.2f}")
+        col2.metric("Total Gasolina (L)", f"{total_gas:.2f}")
+        col3.metric("Total Geral", f"{total_geral:.2f}")
 
         # ----------------------- Gráfico mensal -----------------------
-        with st.expander("📈 Mostrar gráfico de gastos mensais"):
+        with st.expander("📈 Mostrar gráfico de volumes mensais"):
             df_view["GNV_NUM"] = df_view["GNV"].astype(float)
             df_view["GAS_NUM"] = df_view["GAS"].astype(float)
             df_view["MES"] = df_view["DATA"].dt.to_period("M")
             df_grafico = df_view.groupby("MES")[["GNV_NUM", "GAS_NUM"]].sum()
-            df_grafico.rename(columns={"GNV_NUM":"GNV", "GAS_NUM":"Gasolina"}, inplace=True)
+            df_grafico.rename(columns={"GNV_NUM":"GNV (m³)", "GAS_NUM":"Gasolina (L)"}, inplace=True)
             df_grafico.index = df_grafico.index.astype(str)
             st.bar_chart(df_grafico)
