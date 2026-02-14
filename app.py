@@ -8,7 +8,6 @@ st.title("⛽ Controle de Combustível")
 
 ARQUIVO = "dados.csv"
 
-Cria o arquivo se não existir
 if not os.path.exists(ARQUIVO):
   pd.DataFrame(columns=['DATA', 'GNV', 'GAS', 'TOTAL']).to_csv(ARQUIVO, index=False)
 
@@ -20,6 +19,5 @@ with st.form("meu_form", clear_on_submit=True):
 
 st.divider()
 
-Exibição da tabela com correção automática de data
 if os.path.exists(ARQUIVO):
   df_view = pd.read_csv(ARQUIVO)
