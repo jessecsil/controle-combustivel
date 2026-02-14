@@ -91,7 +91,7 @@ if os.path.exists(ARQUIVO):
                                   .apply(highlight_max, subset=["TOTAL"])
 
         st.subheader("📊 Registros Salvos")
-        st.dataframe(styled_df)
+        st.dataframe(df_style)
 
         # ----------------------- Totais -----------------------
         total_gnv = df_filtrado["GNV"].astype(float).sum()
