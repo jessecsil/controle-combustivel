@@ -5,7 +5,7 @@ from datetime import datetime
 
 # ----------------------- Configuração da página -----------------------
 st.set_page_config(page_title="⛽ Abastece 2026", layout="wide")
-st.markdown("<h1 style='text-align:center;'>⛽ Painel de Controle de Combustível</h1>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align:center;'>⛽ Painel de Controle de Combustível</h2>", unsafe_allow_html=True)
 
 ARQUIVO = "dados.csv"
 
@@ -15,7 +15,7 @@ if not os.path.exists(ARQUIVO):
 
 # ----------------------- Formulário de cadastro -----------------------
 with st.form("meu_form", clear_on_submit=True):
-    st.subheader("📋 Registrar Abastecimento")
+    st.subheader("📋 Registrar Abastecimento</h2>")
     data_input = st.date_input("Data", datetime.now())
 
     v_gnv_input = st.text_input("GNV (R$)", placeholder="Digite o valor")
@@ -41,7 +41,7 @@ with st.form("meu_form", clear_on_submit=True):
 st.divider()
 
 # ----------------------- Botão limpar dados -----------------------
-if st.button("🗑️ Apagar todos os dados"):
+if st.button("🗑️ Apagar todos os dados</h2>"):
     if os.path.exists(ARQUIVO):
         os.remove(ARQUIVO)
         st.success("✅ Dados apagados com sucesso!")
@@ -57,7 +57,7 @@ if os.path.exists(ARQUIVO):
         df_view["DATA"] = pd.to_datetime([])
 
     # ----------------------- Filtrar por período -----------------------
-    st.subheader("📅 Filtrar por período")
+    st.subheader("📅 Filtrar por período</h2>")
     if df_view.empty:
         min_date = datetime.now().date()
         max_date = datetime.now().date()
@@ -82,7 +82,7 @@ if os.path.exists(ARQUIVO):
         df_style["TOTAL"] = df_style["TOTAL"].astype(float)
 
         # ----------------------- Tabela limpa -----------------------
-        st.subheader("📊 Registros Salvos")
+        st.subheader("📊 Registros Salvos</h2>")
         st.dataframe(df_style)  # Tabela sem fundo colorido
 
         # ----------------------- Totais -----------------------
@@ -90,14 +90,14 @@ if os.path.exists(ARQUIVO):
         total_gas = df_filtrado["GAS"].astype(float).sum()
         total_geral = df_filtrado["TOTAL"].astype(float).sum()
 
-        st.subheader("💰 Totais")
+        st.subheader("💰 Totais</h2>")
         col1, col2, col3 = st.columns(3)
         col1.metric("Total GNV", f"R$ {total_gnv:.2f}")
         col2.metric("Total Gasolina", f"R$ {total_gas:.2f}")
         col3.metric("Total Geral", f"R$ {total_geral:.2f}")
 
         # ----------------------- Gráfico mensal -----------------------
-        with st.expander("📈 Mostrar gráfico de gastos mensais"):
+        with st.expander("📈 Mostrar gráfico de gastos mensais</h2>"):
             df_view["GNV_NUM"] = df_view["GNV"].astype(float)
             df_view["GAS_NUM"] = df_view["GAS"].astype(float)
             df_view["MES"] = df_view["DATA"].dt.to_period("M")
