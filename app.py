@@ -98,10 +98,10 @@ if os.path.exists(ARQUIVO):
 
         # Totais menores e organizados em linhas
         st.markdown(f"""
-        <div style='font-size:16px;'>
-        <strong>Total GNV: R$:</strong> {total_gnv:.2f} <br>
-        <strong>Total Gasolina: R$:</strong> {total_gas:.2f} <br>
-        <strong>Total Geral: R$:</strong> {total_geral:.2f}
+        <div style='font-size:18px;'>
+        <strong>Total GNV R$:</strong> {total_gnv:.2f} <br>
+        <strong>Total Gasolina R$:</strong> {total_gas:.2f} <br>
+        <strong>Total Geral R$:</strong> {total_geral:.2f}
         </div>
         """, unsafe_allow_html=True)
 
