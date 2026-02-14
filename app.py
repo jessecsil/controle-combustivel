@@ -5,7 +5,7 @@ from datetime import datetime
 
 # ----------------------- Configuração da página -----------------------
 st.set_page_config(page_title="⛽ Abastece 2026", layout="wide")
-st.markdown("<h2 style='text-align:center;'>⛽ Controle de Combustível</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align:center;'>⛽ Controle Combustível</h2>", unsafe_allow_html=True)
 
 
 ARQUIVO = "dados.csv"
