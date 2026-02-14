@@ -14,11 +14,12 @@ if not os.path.exists(ARQUIVO):
 
 # FORMULÁRIO DE CADASTRO
 with st.form("meu_form", clear_on_submit=True):
+    st.subheader("Registrar abastecimento")
     data_input = st.date_input("Data", datetime.now())
 
-    # Campos de entrada sem mostrar 0,00
-    v_gnv_input = st.text_input("GNV (R$)", "")
-    v_gas_input = st.text_input("Gasolina (R$)", "")
+    # Campos de entrada com placeholder
+    v_gnv_input = st.text_input("GNV (R$)", placeholder="Digite o valor")
+    v_gas_input = st.text_input("Gasolina (R$)", placeholder="Digite o valor")
 
     # Converte para float ou assume 0 se vazio
     v_gnv = float(v_gnv_input.replace(",", ".").strip()) if v_gnv_input.strip() != "" else 0.0
@@ -77,9 +78,19 @@ if os.path.exists(ARQUIVO):
     for col in ["GNV", "GAS", "TOTAL"]:
         df_exibir[col] = df_exibir[col].astype(float).apply(lambda x: f"R$ {x:.2f}")
 
-    # Exibe tabela apenas com DATA_EXIB
+    # Exibe tabela com destaque para maiores gastos
     st.subheader("Registros Salvos")
-    st.dataframe(df_exibir[["DATA_EXIB", "GNV", "GAS", "TOTAL"]].rename(columns={"DATA_EXIB":"DATA"}))
+    def highlight_maior(val, coluna):
+        max_val = df_filtrado[coluna].astype(float).max()
+        return 'background-color: #ffefc6' if float(val) == max_val and max_val != 0 else ''
+
+    st.dataframe(
+        df_exibir[["DATA_EXIB", "GNV", "GAS", "TOTAL"]]
+        .rename(columns={"DATA_EXIB":"DATA"})
+        .style.applymap(lambda v: highlight_maior(v, "GNV"), subset=["GNV"])
+        .applymap(lambda v: highlight_maior(v, "GAS"), subset=["GAS"])
+        .applymap(lambda v: highlight_maior(v, "TOTAL"), subset=["TOTAL"])
+    )
 
     # TOTAL ACUMULADO
     total_gnv = df_filtrado["GNV"].astype(float).sum()
