@@ -16,6 +16,7 @@ with st.form("meu_form", clear_on_submit=True):
   v_gnv = st.number_input("GNV (R$)")
   v_gas = st.number_input("Gasolina (R$)")
   submit = st.form_submit_button("SALVAR")
+  
   if submit:
     data_formatada = data_input.strftime("%d/%m/%Y")
     total = v_gnv + v_gas
@@ -33,9 +34,11 @@ with st.form("meu_form", clear_on_submit=True):
 
 st.divider()
 
-# BOTÃO PARA APAGAR TODOS OS DADOS
-if st.button("🗑️ Apagar todos os dados"):
-    if os.path.exists(ARQUIVO):
-        os.remove(ARQUIVO)
-        st.success("Dados apagados com sucesso!")
-        st.rerun()
+if os.path.exists(ARQUIVO):
+    df_view = pd.read_csv(ARQUIVO)
+
+    df_view["DATA"] = pd.to_datetime(df_view["DATA"], dayfirst=True)
+    df_view["DATA"] = df_view["DATA"].dt.strftime("%d/%m/%Y")
+
+    st.dataframe(df_view)
+
