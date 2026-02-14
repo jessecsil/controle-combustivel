@@ -6,7 +6,7 @@ from datetime import datetime
 st.set_page_config(page_title="Abastece 2026")
 st.title("⛽ Controle de Combustível")
 
-ARQUIVO =
+ARQUIVO = "dados.csv"
 
 if not os.path.exists(ARQUIVO):
   pd.DataFrame(columns=['DATA', 'GNV', 'GAS', 'TOTAL']).to_csv(ARQUIVO, index=False)
