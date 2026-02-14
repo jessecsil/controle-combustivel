@@ -52,8 +52,8 @@ with st.form("meu_form", clear_on_submit=True):
     # Botão de salvar
     submit = st.form_submit_button("💾 SALVAR")
 
-            # Formata a data
-        data_formatada = data_input.strftime("%d/%m/%Y")
+    # Formata a data
+    data_formatada = data_input.strftime("%d/%m/%Y")
 
         # Cria DataFrame para salvar
         df_novo = pd.DataFrame([{
