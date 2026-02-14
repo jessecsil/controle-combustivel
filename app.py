@@ -8,25 +8,27 @@ st.title("⛽ Controle de Combustível")
 
 ARQUIVO = "dados.csv"
 
-# Cria o arquivo se não existir
+# Cria o CSV se não existir
 if not os.path.exists(ARQUIVO):
     pd.DataFrame(columns=['DATA', 'GNV', 'GAS', 'TOTAL']).to_csv(ARQUIVO, index=False)
 
-# FORMULÁRIO
+# FORMULÁRIO DE ENTRADA
 with st.form("meu_form", clear_on_submit=True):
     data_input = st.date_input("Data", datetime.now())
+    
+    # Mostra a data selecionada no formato DD/MM/YYYY
+    data_formatada_para_exibir = data_input.strftime("%d/%m/%Y")
+    st.markdown(f"**Data selecionada:** {data_formatada_para_exibir}")
+
     v_gnv = st.number_input("GNV (R$)")
     v_gas = st.number_input("Gasolina (R$)")
     submit = st.form_submit_button("SALVAR")
 
     if submit:
-        # Formata a data como string no padrão brasileiro
-        data_formatada = data_input.strftime("%d/%m/%Y")
         total = v_gnv + v_gas
 
-        # Novo registro
         df_novo = pd.DataFrame([{
-            "DATA": data_formatada,
+            "DATA": data_formatada_para_exibir,  # salva no formato DD/MM/YYYY
             "GNV": v_gnv,
             "GAS": v_gas,
             "TOTAL": total
@@ -43,13 +45,12 @@ if st.button("🗑️ Apagar todos os dados"):
     if os.path.exists(ARQUIVO):
         os.remove(ARQUIVO)
         st.success("Dados apagados com sucesso!")
-        st.experimental_rerun()  # Recarrega app para criar arquivo vazio novamente
+        st.experimental_rerun()  # Recarrega o app
 
-# LEITURA E EXIBIÇÃO DOS DADOS
+# EXIBIÇÃO DOS DADOS
 if os.path.exists(ARQUIVO):
-    df_view = pd.read_csv(ARQUIVO, dtype=str)  # <-- FORÇA TODAS COLUNAS COMO STRING
-
-    # Garantir que a coluna DATA fique no formato 14/02/2026
-    df_view["DATA"] = df_view["DATA"].str.replace("-", "/")  # substitui qualquer - por /
+    df_view = pd.read_csv(ARQUIVO, dtype=str)
+    df_view["DATA"] = df_view["DATA"].apply(lambda x: x.replace("-", "/"))
     
+    st.subheader("Registros Salvos")
     st.dataframe(df_view)
