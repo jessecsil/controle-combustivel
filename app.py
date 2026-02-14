@@ -5,7 +5,7 @@ from datetime import datetime
 
 # ----------------------- Configuração da página -----------------------
 st.markdown("""
-<h6 style='text-align: left;'>
+<h3 style='text-align: left;'>
 ⛽ Abasteceu ⛽
 </h3>
 """, unsafe_allow_html=True)
