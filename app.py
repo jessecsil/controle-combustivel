@@ -23,7 +23,7 @@ ARQUIVO = "dados.csv"
 if not os.path.exists(ARQUIVO):
     pd.DataFrame(columns=['DATA', 'GNV', 'GAS', 'TOTAL']).to_csv(ARQUIVO, index=False)
 
-# ----------------------- Formulário de cadastro -----------------------
+## ----------------------- Formulário de cadastro -----------------------
 with st.form("meu_form", clear_on_submit=True):
     st.markdown("<h5>📋 Registrar Abastecimento</h5>", unsafe_allow_html=True)
     data_input = st.date_input("Data", datetime.now())
@@ -39,6 +39,12 @@ with st.form("meu_form", clear_on_submit=True):
     if submit:
         total = v_gnv + v_gas
         data_formatada = data_input.strftime("%d/%m/%Y")
+
+        # Formata os valores como moeda brasileira antes de salvar
+        gnv_formatado = moeda_brasil(v_gnv)
+        gas_formatado = moeda_brasil(v_gas)
+        total_formatado = moeda_brasil(total)
+
         df_novo = pd.DataFrame([{
             "DATA": data_formatada,
             "GNV": v_gnv,
@@ -46,9 +52,16 @@ with st.form("meu_form", clear_on_submit=True):
             "TOTAL": total
         }])
         df_novo.to_csv(ARQUIVO, mode="a", header=False, index=False)
-        st.success("✅ Salvo com sucesso!")
 
-st.divider()
+        # Mostra os valores formatados para o usuário
+        st.success(f"✅ Salvo com sucesso!")
+        st.markdown(f"""
+        <div style='font-size:14px;'>
+        <strong>GNV:</strong> {gnv_formatado} <br>
+        <strong>Gasolina:</strong> {gas_formatado} <br>
+        <strong>Total:</strong> {total_formatado}
+        </div>
+        """, unsafe_allow_html=True)
 
 # ----------------------- Botão limpar dados -----------------------
 if st.button("🗑️ Apagar todos os dados"):
