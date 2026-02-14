@@ -55,12 +55,12 @@ with st.form("meu_form", clear_on_submit=True):
     # Formata a data
     data_formatada = data_input.strftime("%d/%m/%Y")
 
-        # Cria DataFrame para salvar
-        df_novo = pd.DataFrame([{
-            "DATA": data_formatada,
-            "GNV": v_gnv,
-            "GAS": v_gas,
-            "TOTAL": total
+    # Cria DataFrame para salvar
+    df_novo = pd.DataFrame([{
+        "DATA": data_formatada,
+        "GNV": v_gnv,
+        "GAS": v_gas,
+        "TOTAL": total
         }])
 
         # Salva no CSV
