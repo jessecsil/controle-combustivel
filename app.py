@@ -91,19 +91,21 @@ if os.path.exists(ARQUIVO):
         st.subheader("📊 Registros Salvos")
         st.dataframe(df_style)  # Tabela sem fundo colorido
 
-        # ----------------------- Totais -----------------------
+       # ----------------------- Totais -----------------------
         total_gnv = df_filtrado["GNV"].astype(float).sum()
         total_gas = df_filtrado["GAS"].astype(float).sum()
         total_geral = df_filtrado["TOTAL"].astype(float).sum()
 
-        # Totais menores usando HTML
+        # Totais menores e organizados em linhas
         st.markdown(f"""
         <div style='font-size:14px;'>
-        <strong>Total GNV (R$):</strong> {total_gnv:.2f} R$ &nbsp;&nbsp;
+        <strong>Volume total:</strong> GNV = {total_gnv:.2f} m³ | Gasolina = {total_gas:.2f} L<br>
+        <strong>Total GNV (R$):</strong> {total_gnv:.2f} R$<br>
         <strong>Total Gasolina (R$):</strong> {total_gas:.2f} R$<br>
         <strong>Total Geral:</strong> R$ {total_geral:.2f}
         </div>
         """, unsafe_allow_html=True)
+
 
         # ----------------------- Gráfico mensal -----------------------
         with st.expander("📈 Mostrar gráfico de gastos mensais"):
